@@ -5,6 +5,8 @@ import requests
 import re
 import json
 
+timeout = 15
+
 headers = {'X-Requested-With': 'XMLHttpRequest'}
 r = requests.get("http://bbs.byr.cn/")
 
@@ -20,7 +22,12 @@ def assembleBoardUrl (uid, relative_url):
 
 def getAllSections(r, url):
     sections = []
-    r_sub = requests.get(url, cookies = r.cookies.get_dict(), headers = headers)
+    try:
+        r_sub = requests.get(url, cookies = r.cookies.get_dict(), headers = headers, timeout = timeout)
+    except KeyboardInterrupt:
+        sys.exit(-1)
+    except:
+        return sections
     j = json.loads (r_sub.text)
 
     for i in range(len(j)):
@@ -35,14 +42,24 @@ def getAllSections(r, url):
 
 
 def getSectionList(r, url):
-    r_sub = requests.get(url, cookies = r.cookies.get_dict(), headers = headers)
+    try:
+        r_sub = requests.get(url, cookies = r.cookies.get_dict(), headers = headers, timeout = timeout)
+    except KeyboardInterrupt:
+        sys.exit(-1)
+    except:
+        return ''
     content = re.findall (r'class=\"title_1\".*?href=\"(.*?)\">(.*?)</a>', r_sub.text)
     #print (content)
     return content
 
 
 def getContentOfParticularBoard (r, url):
-    r_sub = requests.get(url, cookies = r.cookies.get_dict(), headers = headers)
+    try:
+        r_sub = requests.get(url, cookies = r.cookies.get_dict(), headers = headers, timeout = timeout)
+    except KeyboardInterrupt:
+        sys.exit(-1)
+    except:
+        return ''
     items =  re.findall(r'<td.*?_9">.*?href="(.*?)">(.*?)</a>.*?_10">(.*?)</td>.*?_11 middle">(.*?)</td>', r_sub.text)
     return items
 
